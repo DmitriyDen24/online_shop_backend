@@ -1,0 +1,60 @@
+buildscript{
+	repositories {
+		mavenCentral()
+	}
+
+	dependencies {
+		classpath 'org.jooq:jooq-codegen:3.13.0'
+		classpath 'org.postgresql:postgresql:42.2.10.jre7'
+	}
+}
+
+plugins {
+	id 'org.springframework.boot' version '2.2.4.RELEASE'
+	id 'io.spring.dependency-management' version '1.0.9.RELEASE'
+	id 'java'
+}
+
+group = 'com.lern-api'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '1.8'
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-jooq'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.jooq:jooq:3.13.0'
+	implementation 'org.postgresql:postgresql:42.2.10.jre7'
+	testImplementation('org.springframework.boot:spring-boot-starter-test') {
+		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+	}
+}
+
+			def writer = new StringWriter()
+			def xml = new groovy.xml.MarkupBuilder(writer)
+					.configuration('xmlns': 'http://www.jooq.org/xsd/jooq-codegen-3.13.0.xsd') {
+						jdbc() {
+							driver('org.postgresql.Driver')
+							url('jdbc:postgresql://localhost:5432/online_shop')
+							user('online_shop')
+							password('online_shop')
+						}
+						generator() {
+							database([:]) {
+								name  'org.jooq.meta.postgres.PostgresDatabase'
+								inputSchema  'online_shop'
+								includes  '.*'
+							}
+							generate() {
+								pojos true
+							}
+							target() {
+								packageName('com.lernapi.myapp.db')
+								directory('src/main/java')
+							}
+						}
+					}
+			org.jooq.codegen.GenerationTool.generate(writer.toString())
